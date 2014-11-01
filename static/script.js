@@ -30,7 +30,20 @@ function handleAuthClick(event) {
 
 // Load the API and make an API call.  Display the results on the screen.
 function makeApiCall() {
-    var restRequest = gapi.client.request({
+    var calListRequest = gapi.client.request({
+        'path': '/calendar/v3/users/me/calendarList',
+    });
+    
+    calListRequest.then(function(resp) {
+        var ids = resp.result.items;
+        for (var i = 0; i < ids.length; i++) {
+            console.log(ids[i].id);
+        }
+    }, function(reason) {
+        console.log('Error: ' + reason.result.error.message);
+    });
+    
+    var freeBusyRequest = gapi.client.request({
         'path': '/calendar/v3/freeBusy',
         'method': 'POST',
         'body': {
@@ -41,10 +54,13 @@ function makeApiCall() {
             }]
         }
     });
-    restRequest.then(function(resp) {
+    
+    freeBusyRequest.then(function(resp) {
         console.log(resp.result);
         $("#content").html(JSON.stringify(resp.result));
     }, function(reason) {
         console.log('Error: ' + reason.result.error.message);
     });
+    
+
 }
